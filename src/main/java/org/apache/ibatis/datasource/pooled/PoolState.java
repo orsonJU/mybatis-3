@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * @author Clinton Begin
  */
+// idea pool state是一个核心类
 public class PoolState {
 
   protected PooledDataSource dataSource;

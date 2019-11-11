@@ -36,6 +36,7 @@ import org.apache.ibatis.io.Resources;
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+// idea mybatis提供的datasource的实现
 public class UnpooledDataSource implements DataSource {
 
   private ClassLoader driverClassLoader;
@@ -218,6 +219,7 @@ public class UnpooledDataSource implements DataSource {
 
   private Connection doGetConnection(Properties properties) throws SQLException {
     initializeDriver();
+    // idea，加载数据库驱动自后，获取连接
     Connection connection = DriverManager.getConnection(url, properties);
     configureConnection(connection);
     return connection;
@@ -228,6 +230,7 @@ public class UnpooledDataSource implements DataSource {
       Class<?> driverType;
       try {
         if (driverClassLoader != null) {
+          // idea 很熟悉的代码，利用Class.forName来加载对应的数据库驱动
           driverType = Class.forName(driver, true, driverClassLoader);
         } else {
           driverType = Resources.classForName(driver);

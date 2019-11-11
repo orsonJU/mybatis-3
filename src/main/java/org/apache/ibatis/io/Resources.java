@@ -109,6 +109,7 @@ public class Resources {
    * @throws java.io.IOException If the resource cannot be found or read
    */
   public static InputStream getResourceAsStream(ClassLoader loader, String resource) throws IOException {
+    // idea 从classpath下加载配置文件
     InputStream in = classLoaderWrapper.getResourceAsStream(resource, loader);
     if (in == null) {
       throw new IOException("Could not find resource " + resource);
@@ -213,6 +214,8 @@ public class Resources {
    * @throws java.io.IOException If the resource cannot be found or read
    */
   public static InputStream getUrlAsStream(String urlString) throws IOException {
+    // idea 从url中获取文件
+    // idea 这里是
     URL url = new URL(urlString);
     URLConnection conn = url.openConnection();
     return conn.getInputStream();

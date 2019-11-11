@@ -178,14 +178,18 @@ public class Configuration {
     this.environment = environment;
   }
 
+  // idea 初始化一些mybatis default的配置
   public Configuration() {
+    // for <trasactionManager />
     typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 
+    // for <dataSource />
     typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
     typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
     typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
 
+    // for cache
     typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class);
     typeAliasRegistry.registerAlias("FIFO", FifoCache.class);
     typeAliasRegistry.registerAlias("LRU", LruCache.class);
@@ -197,6 +201,7 @@ public class Configuration {
     typeAliasRegistry.registerAlias("XML", XMLLanguageDriver.class);
     typeAliasRegistry.registerAlias("RAW", RawLanguageDriver.class);
 
+    // for logging
     typeAliasRegistry.registerAlias("SLF4J", Slf4jImpl.class);
     typeAliasRegistry.registerAlias("COMMONS_LOGGING", JakartaCommonsLoggingImpl.class);
     typeAliasRegistry.registerAlias("LOG4J", Log4jImpl.class);
@@ -205,6 +210,7 @@ public class Configuration {
     typeAliasRegistry.registerAlias("STDOUT_LOGGING", StdOutImpl.class);
     typeAliasRegistry.registerAlias("NO_LOGGING", NoLoggingImpl.class);
 
+    // for proxy
     typeAliasRegistry.registerAlias("CGLIB", CglibProxyFactory.class);
     typeAliasRegistry.registerAlias("JAVASSIST", JavassistProxyFactory.class);
 
@@ -598,10 +604,12 @@ public class Configuration {
     return newExecutor(transaction, defaultExecutorType);
   }
 
+  // 创建executor
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
+    // FIXME 应该使用工厂模式
     if (ExecutorType.BATCH == executorType) {
       executor = new BatchExecutor(this, transaction);
     } else if (ExecutorType.REUSE == executorType) {
@@ -609,6 +617,7 @@ public class Configuration {
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
+    // idea 是否开启cache
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
@@ -752,6 +761,7 @@ public class Configuration {
     if (validateIncompleteStatements) {
       buildAllStatements();
     }
+    // idea mappedStatements是configuration在解析的时候放进来的
     return mappedStatements.get(id);
   }
 
@@ -768,6 +778,7 @@ public class Configuration {
   }
 
   public void addMappers(String packageName) {
+    // @main method
     mapperRegistry.addMappers(packageName);
   }
 

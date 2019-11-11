@@ -18,6 +18,7 @@ package org.apache.ibatis.executor;
 /**
  * @author Clinton Begin
  */
+// idea 应该和dubbo一样，保存当前线程的错误信息
 public class ErrorContext {
 
   private static final String LINE_SEPARATOR = System.getProperty("line.separator","\n");

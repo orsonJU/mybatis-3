@@ -303,6 +303,7 @@ public class XNode {
 
   public Properties getChildrenAsProperties() {
     Properties properties = new Properties();
+    // idea，通过解释xml，把name和value存放到一个properties对象中
     for (XNode child : getChildren()) {
       String name = child.getStringAttribute("name");
       String value = child.getStringAttribute("value");

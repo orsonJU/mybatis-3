@@ -101,6 +101,7 @@ public abstract class VFS {
   /** Get a class by name. If the class is not found then return null. */
   protected static Class<?> getClass(String className) {
     try {
+      // idea 默认的VFS是使用classloader来加载对应的class文件
       return Thread.currentThread().getContextClassLoader().loadClass(className);
 //      return ReflectUtil.findClass(className);
     } catch (ClassNotFoundException e) {
@@ -168,6 +169,7 @@ public abstract class VFS {
    * @throws IOException If I/O errors occur
    */
   protected static List<URL> getResources(String path) throws IOException {
+    // idea 通过classloader来获取resources
     return Collections.list(Thread.currentThread().getContextClassLoader().getResources(path));
   }
 

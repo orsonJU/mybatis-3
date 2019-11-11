@@ -45,11 +45,13 @@ public class PooledDataSource implements DataSource {
   private final UnpooledDataSource dataSource;
 
   // OPTIONAL CONFIGURATION FIELDS
+  // idea 数据库连接池的一些核心参数
   protected int poolMaximumActiveConnections = 10;
   protected int poolMaximumIdleConnections = 5;
   protected int poolMaximumCheckoutTime = 20000;
   protected int poolTimeToWait = 20000;
   protected int poolMaximumLocalBadConnectionTolerance = 3;
+  // idea 可以通过 <dataSource /> 设置一个侦测的语句，用来验证数据库连接是否正常
   protected String poolPingQuery = "NO PING QUERY SET";
   protected boolean poolPingEnabled;
   protected int poolPingConnectionsNotUsedFor;
@@ -407,6 +409,7 @@ public class PooledDataSource implements DataSource {
     long t = System.currentTimeMillis();
     int localBadConnectionCount = 0;
 
+    // @main method idea 获取一个连接
     while (conn == null) {
       synchronized (state) {
         if (!state.idleConnections.isEmpty()) {
@@ -417,6 +420,9 @@ public class PooledDataSource implements DataSource {
           }
         } else {
           // Pool does not have available connection
+          // idea 当当前的连接数超过允许的最大连接数时候，会进入条件#condition2，condition2会尝试获取最旧的连接，并测试是否可用，如果不可能就会剔除，
+          // idea 当剔除后，conn变量仍然是空，所以会进行第二次循环，这个时候#condition1就会被满足
+          // #condition1
           if (state.activeConnections.size() < poolMaximumActiveConnections) {
             // Can create new connection
             conn = new PooledConnection(dataSource.getConnection(), this);
@@ -424,9 +430,12 @@ public class PooledDataSource implements DataSource {
               log.debug("Created connection " + conn.getRealHashCode() + ".");
             }
           } else {
+            // #condition2
             // Cannot create new connection
+            // idea 因为array list是按顺序存放的，所以位置0的元素最老
             PooledConnection oldestActiveConnection = state.activeConnections.get(0);
             long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
+            // mist 什么是poolMaximumCheckoutTime？超过20秒没有被使用，则关闭连接？
             if (longestCheckoutTime > poolMaximumCheckoutTime) {
               // Can claim overdue connection
               state.claimedOverdueConnectionCount++;
@@ -451,6 +460,7 @@ public class PooledDataSource implements DataSource {
               conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
               conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
               conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
+              // idea 设置当前连接失效
               oldestActiveConnection.invalidate();
               if (log.isDebugEnabled()) {
                 log.debug("Claimed overdue connection " + conn.getRealHashCode() + ".");
@@ -476,7 +486,9 @@ public class PooledDataSource implements DataSource {
         }
         if (conn != null) {
           // ping to server and check the connection is valid or not
+          // idea 对连接进行侦测，相当于运行一条语句，确保连接仍然可用
           if (conn.isValid()) {
+            // idea 在连接交给新的使用者的时候，要确保存在的业务全部回滚
             if (!conn.getRealConnection().getAutoCommit()) {
               conn.getRealConnection().rollback();
             }
@@ -525,6 +537,7 @@ public class PooledDataSource implements DataSource {
     boolean result = true;
 
     try {
+      // idea 注意，这里是取反了
       result = !conn.getRealConnection().isClosed();
     } catch (SQLException e) {
       if (log.isDebugEnabled()) {
@@ -533,13 +546,18 @@ public class PooledDataSource implements DataSource {
       result = false;
     }
 
+    // 如果connection不是关闭状态
     if (result) {
+      // idea <dataSource /> 元素属性，是否开启侦测功能
       if (poolPingEnabled) {
+        // idea 侦测的频率，如果当前connection距离上次使用的时间已经超过了侦测频率
         if (poolPingConnectionsNotUsedFor >= 0 && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
           try {
             if (log.isDebugEnabled()) {
               log.debug("Testing connection " + conn.getRealHashCode() + " ...");
             }
+
+            // idea 进行侦测
             Connection realConn = conn.getRealConnection();
             try (Statement statement = realConn.createStatement()) {
               statement.executeQuery(poolPingQuery).close();

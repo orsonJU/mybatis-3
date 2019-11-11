@@ -62,12 +62,15 @@ public class MapperRegistry {
       if (hasMapper(type)) {
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
       }
+      // @main mehod
       boolean loadCompleted = false;
       try {
+        // @main method
         knownMappers.put(type, new MapperProxyFactory<>(type));
         // It's important that the type is added before the parser is run
         // otherwise the binding may automatically be attempted by the
         // mapper parser. If the type is already known, it won't try.
+        // mist 这个是干嘛？
         MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
         parser.parse();
         loadCompleted = true;
@@ -90,9 +93,11 @@ public class MapperRegistry {
    * @since 3.2.2
    */
   public void addMappers(String packageName, Class<?> superType) {
+    // mist 解释package属性，判定是否是一个接口？
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
     Set<Class<? extends Class<?>>> mapperSet = resolverUtil.getClasses();
+    // mist 应该只有1个，为什么会返回多个呢？
     for (Class<?> mapperClass : mapperSet) {
       addMapper(mapperClass);
     }

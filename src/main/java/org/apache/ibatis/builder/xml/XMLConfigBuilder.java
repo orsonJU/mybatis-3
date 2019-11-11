@@ -91,16 +91,19 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   public Configuration parse() {
+    // 防止重复解释
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
+    // 解释root节点 configuration
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
 
   private void parseConfiguration(XNode root) {
     try {
+      // idea 开始解释所有一级节点
       //issue #117 read properties first
       propertiesElement(root.evalNode("properties"));
       Properties settings = settingsAsProperties(root.evalNode("settings"));
@@ -116,6 +119,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       environmentsElement(root.evalNode("environments"));
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
       typeHandlerElement(root.evalNode("typeHandlers"));
+      // @main 解释mapper
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -137,6 +141,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     return props;
   }
 
+  // mist 什么是VFS？virtual file system
   private void loadCustomVfs(Properties props) throws ClassNotFoundException {
     String value = props.getProperty("vfsImpl");
     if (value != null) {
@@ -151,6 +156,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  // 加载自定义的logging实现
   private void loadCustomLogImpl(Properties props) {
     Class<? extends Log> logImpl = resolveClass(props.getProperty("logImpl"));
     configuration.setLogImpl(logImpl);
@@ -221,6 +227,8 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
       Properties defaults = context.getChildrenAsProperties();
+
+      // 标签<properties /> 可以配置一个resource属性，支持从外部加载properties文件
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
       if (resource != null && url != null) {
@@ -235,6 +243,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       if (vars != null) {
         defaults.putAll(vars);
       }
+      // 因为parser需要解释接下来的xml，可能要动态替换属性
       parser.setVariables(defaults);
       configuration.setVariables(defaults);
     }
@@ -277,6 +286,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");
         if (isSpecifiedEnvironment(id)) {
+          // 初始化trasactino manager
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
           DataSource dataSource = dsFactory.getDataSource();
@@ -310,6 +320,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private TransactionFactory transactionManagerElement(XNode context) throws Exception {
     if (context != null) {
+      // idea type只有两种，一种jdbc，另外一种是managed
       String type = context.getStringAttribute("type");
       Properties props = context.getChildrenAsProperties();
       TransactionFactory factory = (TransactionFactory) resolveClass(type).getDeclaredConstructor().newInstance();
@@ -359,8 +370,10 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void mapperElement(XNode parent) throws Exception {
     if (parent != null) {
+      // idea 所以每个mapper文件可以有多个package属性
       for (XNode child : parent.getChildren()) {
         if ("package".equals(child.getName())) {
+          // 获取package标签的name属性
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
         } else {

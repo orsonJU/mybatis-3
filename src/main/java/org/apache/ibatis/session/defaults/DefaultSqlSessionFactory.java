@@ -43,6 +43,8 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
   }
 
   @Override
+  // 当DefaultSqlSessionFactory创建完毕后，需有从中获取一个sql session对象
+  // idea defaultExecutorType=SIMPLE
   public SqlSession openSession() {
     return openSessionFromDataSource(configuration.getDefaultExecutorType(), null, false);
   }
@@ -88,10 +90,12 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
   }
 
   private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+    // mist transaction是mybatis提供的接口和实现
     Transaction tx = null;
     try {
       final Environment environment = configuration.getEnvironment();
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
+      // tx 持有connection对象
       tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
       final Executor executor = configuration.newExecutor(tx, execType);
       return new DefaultSqlSession(configuration, executor, autoCommit);
@@ -116,6 +120,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
       final Environment environment = configuration.getEnvironment();
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
       final Transaction tx = transactionFactory.newTransaction(connection);
+      // @main method
       final Executor executor = configuration.newExecutor(tx, execType);
       return new DefaultSqlSession(configuration, executor, autoCommit);
     } catch (Exception e) {

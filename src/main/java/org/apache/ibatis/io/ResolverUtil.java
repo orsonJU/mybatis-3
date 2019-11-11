@@ -237,6 +237,7 @@ public class ResolverUtil<T> {
    * @param packageName The Java package name to convert to a path
    */
   protected String getPackagePath(String packageName) {
+    // idea 更具package的名字来查找对应的class文件的常用做法
     return packageName == null ? null : packageName.replace('.', '/');
   }
 
