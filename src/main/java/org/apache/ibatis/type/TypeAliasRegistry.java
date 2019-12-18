@@ -110,9 +110,11 @@ public class TypeAliasRegistry {
       // issue #748
       String key = string.toLowerCase(Locale.ENGLISH);
       Class<T> value;
+      // idea 如果别名有注册在configuration.xml中，则返回对应的class
       if (typeAliases.containsKey(key)) {
         value = (Class<T>) typeAliases.get(key);
       } else {
+        // 如果没有则使用Class.forName？
         value = (Class<T>) Resources.classForName(string);
       }
       return value;

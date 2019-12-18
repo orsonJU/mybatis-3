@@ -78,12 +78,15 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
+    // XPathParser是用来解析xml文件的
     this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
   }
 
   private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+    // XMLConfigBuilder的责任是解析xml配置并返回一个Configuration对象
     super(new Configuration());
     ErrorContext.instance().resource("SQL Mapper Configuration");
+    // mist 什么情况需要额外的配置？
     this.configuration.setVariables(props);
     this.parsed = false;
     this.environment = environment;
@@ -323,6 +326,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       // idea type只有两种，一种jdbc，另外一种是managed
       String type = context.getStringAttribute("type");
       Properties props = context.getChildrenAsProperties();
+      // 通过反射获取transaction实现类，这个是在configuration的typealias中保存的
       TransactionFactory factory = (TransactionFactory) resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(props);
       return factory;
@@ -370,13 +374,14 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void mapperElement(XNode parent) throws Exception {
     if (parent != null) {
-      // idea 所以每个mapper文件可以有多个package属性
+      // idea 每个mappers下面可以包含2中标签<mapper/>和<package/>
       for (XNode child : parent.getChildren()) {
+        // 处理<package/>标签
         if ("package".equals(child.getName())) {
-          // 获取package标签的name属性
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
         } else {
+          // 处理<mapper/>标签，标签下支持'resouce'/'url'/'class'3种属性
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");
@@ -394,6 +399,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             Class<?> mapperInterface = Resources.classForName(mapperClass);
             configuration.addMapper(mapperInterface);
           } else {
+            // idea 不支持同时配置超过2种属性
             throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
           }
         }

@@ -25,6 +25,7 @@ import org.apache.ibatis.session.SqlSession;
 /**
  * @author Lasse Voss
  */
+// mapper代理类的生产工厂类
 public class MapperProxyFactory<T> {
 
   private final Class<T> mapperInterface;

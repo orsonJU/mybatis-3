@@ -109,10 +109,12 @@ public class ClassLoaderWrapper {
    * @return the resource or null
    */
   InputStream getResourceAsStream(String resource, ClassLoader[] classLoader) {
+    // idea 尝试用不同的classloader来加载资源
     for (ClassLoader cl : classLoader) {
       if (null != cl) {
 
         // try to find the resource as passed
+        // idea classloader寻找资源默认是从classpath下面寻找
         InputStream returnValue = cl.getResourceAsStream(resource);
 
         // now, some class loaders want this leading "/", so we'll add it and try again if we didn't find the resource
@@ -202,6 +204,7 @@ public class ClassLoaderWrapper {
   }
 
   ClassLoader[] getClassLoaders(ClassLoader classLoader) {
+    // 创建一个classloader数组
     return new ClassLoader[]{
         classLoader,
         defaultClassLoader,
