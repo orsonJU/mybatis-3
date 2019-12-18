@@ -145,6 +145,7 @@ public class Configuration {
   protected Class<?> configurationFactory;
 
   protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+  // InterceptorChain是一个plugin list
   protected final InterceptorChain interceptorChain = new InterceptorChain();
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry(this);
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
@@ -617,7 +618,7 @@ public class Configuration {
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
-    // idea 是否开启cache
+    // idea 是否开启cache? 这个是二级缓存？
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }

@@ -40,11 +40,13 @@ public class Plugin implements InvocationHandler {
     this.signatureMap = signatureMap;
   }
 
+  // target是被代理的对象， interceptor是实现了mybatis的接口Interceptor的插件实现
   public static Object wrap(Object target, Interceptor interceptor) {
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
     if (interfaces.length > 0) {
+      // idea JDK动态代理
       return Proxy.newProxyInstance(
           type.getClassLoader(),
           interfaces,
@@ -57,6 +59,7 @@ public class Plugin implements InvocationHandler {
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+      // idea 如果签名中的方法需要拦截，则调用插件的方法
       if (methods != null && methods.contains(method)) {
         return interceptor.intercept(new Invocation(target, method, args));
       }
@@ -66,6 +69,7 @@ public class Plugin implements InvocationHandler {
     }
   }
 
+  // 获取某个插件接口上的注解信息，@Intercepts和@Signature
   private static Map<Class<?>, Set<Method>> getSignatureMap(Interceptor interceptor) {
     Intercepts interceptsAnnotation = interceptor.getClass().getAnnotation(Intercepts.class);
     // issue #251

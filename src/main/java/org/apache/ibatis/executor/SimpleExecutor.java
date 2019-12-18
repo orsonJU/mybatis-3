@@ -61,10 +61,12 @@ public class SimpleExecutor extends BaseExecutor {
       Configuration configuration = ms.getConfiguration();
       // @main method
       StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+      // idea, 这里需要通过jdbc的方式获取一个connection，事务从这里开始
       stmt = prepareStatement(handler, ms.getStatementLog());
       // @main method
       return handler.query(stmt, resultHandler);
     } finally {
+      // idea 事务最后在这里关闭
       closeStatement(stmt);
     }
   }

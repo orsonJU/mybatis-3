@@ -128,6 +128,7 @@ public class MapperAnnotationBuilder {
       loadXmlResource();
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
+      // idea 处理@CacheNamespace和@CacheNamespaceRef
       parseCache();
       parseCacheRef();
       Method[] methods = type.getMethods();
@@ -147,6 +148,8 @@ public class MapperAnnotationBuilder {
 
   private void parsePendingMethods() {
     Collection<MethodResolver> incompleteMethods = configuration.getIncompleteMethods();
+    // 这里锁的是configuration.getIncompleteMethods()返回的对应引用，所以当其他线程想对configuration.getIncompleteMethods()返回的对象
+    // 上锁，背后其实都是同一个对象
     synchronized (incompleteMethods) {
       Iterator<MethodResolver> iter = incompleteMethods.iterator();
       while (iter.hasNext()) {
