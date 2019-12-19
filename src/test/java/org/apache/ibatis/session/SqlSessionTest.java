@@ -63,6 +63,7 @@ class SqlSessionTest extends BaseDataTest {
 
   @BeforeAll
   static void setup() throws Exception {
+    // mist 测试的test case直接使用了derby内嵌的数据库
     createBlogDataSource();
     final String resource = "org/apache/ibatis/builder/MapperConfig.xml";
     final Reader reader = Resources.getResourceAsReader(resource);
@@ -77,6 +78,8 @@ class SqlSessionTest extends BaseDataTest {
     final PerpetualCache cache = new PerpetualCache(fullName);
     c.addCache(cache);
     assertEquals(cache, c.getCache(fullName));
+    // mist why can use short name?
+    // idea mybatis实现了自己的map，叫StrictMap
     assertEquals(cache, c.getCache(shortName));
   }
 
