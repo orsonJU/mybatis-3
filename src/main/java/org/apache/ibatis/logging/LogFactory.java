@@ -31,6 +31,7 @@ public final class LogFactory {
   private static Constructor<? extends Log> logConstructor;
 
   static {
+    // 定义了mybatis加载日志框架的优先级和顺序
     tryImplementation(LogFactory::useSlf4jLogging);
     tryImplementation(LogFactory::useCommonsLogging);
     tryImplementation(LogFactory::useLog4J2Logging);
@@ -59,6 +60,9 @@ public final class LogFactory {
     setImplementation(clazz);
   }
 
+  /**
+   * 下面的实现类都是适配器模式的实现，兼容各种日志框架
+   */
   public static synchronized void useSlf4jLogging() {
     setImplementation(org.apache.ibatis.logging.slf4j.Slf4jImpl.class);
   }
