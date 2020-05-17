@@ -28,6 +28,7 @@ public final class PropertyNamer {
     // Prevent Instantiation of Static Class
   }
 
+  // idea 从方法名字中获取属性名字，让我想起Javabean的标准不是类中有多少对象，而是根据getter/setter方法来判断哪些是Javabean的属性。
   public static String methodToProperty(String name) {
     if (name.startsWith("is")) {
       name = name.substring(2);
@@ -48,6 +49,13 @@ public final class PropertyNamer {
     return isGetter(name) || isSetter(name);
   }
 
+  /**
+   * idea 判断是否getter方法的逻辑：
+   * 1. 是否get开始，并且方法名字大于3个字符。意图就是过滤掉名字叫做get的方法
+   * 2. 检查是否is开头，并且方案名字大于2个字符。意图就是过滤掉名字叫做is的方法
+   * @param name
+   * @return
+   */
   public static boolean isGetter(String name) {
     return (name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2);
   }

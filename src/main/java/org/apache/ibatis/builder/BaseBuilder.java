@@ -32,7 +32,10 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  * @author Clinton Begin
  */
 public abstract class BaseBuilder {
+  // idea 所有的孩子节点的信息都封装在这个Configuration对象中
   protected final Configuration configuration;
+
+  // mist 这两个类可以从configuration中获取，为什么要专门写出来呢？
   protected final TypeAliasRegistry typeAliasRegistry;
   protected final TypeHandlerRegistry typeHandlerRegistry;
 

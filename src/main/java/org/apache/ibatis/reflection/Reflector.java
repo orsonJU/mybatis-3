@@ -60,11 +60,16 @@ public class Reflector {
 
   private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 
+  // idea 分析一个class对象
   public Reflector(Class<?> clazz) {
     type = clazz;
+    // 分析无参构造函数
     addDefaultConstructor(clazz);
+    // 分析getter方法
     addGetMethods(clazz);
+    // 分析setter方法
     addSetMethods(clazz);
+    // 分析所有的字段
     addFields(clazz);
     readablePropertyNames = getMethods.keySet().toArray(new String[0]);
     writablePropertyNames = setMethods.keySet().toArray(new String[0]);
@@ -78,6 +83,7 @@ public class Reflector {
 
   private void addDefaultConstructor(Class<?> clazz) {
     Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+    // 获取午参的构造函数
     Arrays.stream(constructors).filter(constructor -> constructor.getParameterTypes().length == 0)
       .findAny().ifPresent(constructor -> this.defaultConstructor = constructor);
   }
