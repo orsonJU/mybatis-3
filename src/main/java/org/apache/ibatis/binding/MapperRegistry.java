@@ -42,6 +42,7 @@ public class MapperRegistry {
 
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    // 获得一个MapperProxyFactory对象，里面只有一个对应mapper的class接口成员变量
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
     if (mapperProxyFactory == null) {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
@@ -59,6 +60,7 @@ public class MapperRegistry {
 
   public <T> void addMapper(Class<T> type) {
     if (type.isInterface()) {
+      // 防止重复的namespace
       if (hasMapper(type)) {
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
       }

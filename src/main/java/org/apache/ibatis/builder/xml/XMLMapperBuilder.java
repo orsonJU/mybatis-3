@@ -92,8 +92,10 @@ public class XMLMapperBuilder extends BaseBuilder {
   public void parse() {
     // 如果没有加载过则进行加载
     if (!configuration.isResourceLoaded(resource)) {
+      // 解析mapper文件
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
+      // @main method
       bindMapperForNamespace();
     }
 
@@ -121,6 +123,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       resultMapElements(context.evalNodes("/mapper/resultMap"));
       sqlElement(context.evalNodes("/mapper/sql"));
+      // 解析sql语句
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
@@ -136,6 +139,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     for (XNode context : list) {
+      // idea 每个select|insert|update|delete分别创建独立的builder来处理，处理后的信息也要写回configuration
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
         statementParser.parseStatementNode();

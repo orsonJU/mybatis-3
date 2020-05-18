@@ -47,6 +47,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
 /**
+ * XMLConfigBuilder是用来解析mybatis的配置的，所以可以只输入一个InputStream
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -78,7 +79,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
-    // XPathParser是用来解析xml文件的
+    // idea XPathParser是用来解析xml文件的，封装了jdk的xml解析类；XMLMapperEntityResolver则是封装了sax框架
     this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
   }
 
@@ -389,6 +390,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
             InputStream inputStream = Resources.getResourceAsStream(resource);
+            // idea 因为解析后的Mapper内容要保存在configuration的mapperRegistry中
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
             mapperParser.parse();
           } else if (resource == null && url != null && mapperClass == null) {

@@ -58,18 +58,20 @@ public class XMLStatementBuilder extends BaseBuilder {
     String id = context.getStringAttribute("id");
     String databaseId = context.getStringAttribute("databaseId");
 
-    // idea 如果当前的数据库id和标签设置的数据库id不一致，则忽略
+    // idea 如果当前的数据库id和标签设置的数据库id不一致，则忽略。多数据库支持
     if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
       return;
     }
 
     String nodeName = context.getNode().getNodeName();
+    // enum类型都有的valueOf方法，可以将字符串转换成枚举类型
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
+    // idea 解析<include>标签
     // Include Fragments before parsing
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
     includeParser.applyIncludes(context.getNode());
@@ -80,6 +82,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     String lang = context.getStringAttribute("lang");
     LanguageDriver langDriver = getLanguageDriver(lang);
 
+    // idea 解析<selectKey>标签
     // Parse selectKey after includes and remove them.
     processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
@@ -95,6 +98,7 @@ public class XMLStatementBuilder extends BaseBuilder {
           ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
     }
 
+    // idea 解析其他的标签
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
     Integer fetchSize = context.getIntAttribute("fetchSize");

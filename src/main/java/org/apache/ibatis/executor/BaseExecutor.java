@@ -134,6 +134,7 @@ public abstract class BaseExecutor implements Executor {
 
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+    // boundSQL是已经渲染完成的sql，用？代替参数的位置
     BoundSql boundSql = ms.getBoundSql(parameter);
     // idea 创建cachekey的逻辑
     CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
@@ -147,6 +148,7 @@ public abstract class BaseExecutor implements Executor {
     if (closed) {
       throw new ExecutorException("Executor was closed.");
     }
+    // 如果<select>标签上有flushCache属性，则晴空缓存
     if (queryStack == 0 && ms.isFlushCacheRequired()) {
       clearLocalCache();
     }
@@ -154,10 +156,11 @@ public abstract class BaseExecutor implements Executor {
     try {
       queryStack++;
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
+      // 如果命中了缓存
       if (list != null) {
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
-        // todo @main mehtod
+        // @main mehtod
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {

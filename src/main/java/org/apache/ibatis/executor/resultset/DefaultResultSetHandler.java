@@ -183,6 +183,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
     final List<Object> multipleResults = new ArrayList<>();
 
+    // 获取查询的第一行结果
     int resultSetCount = 0;
     ResultSetWrapper rsw = getFirstResultSet(stmt);
 
@@ -606,6 +607,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, List<Class<?>> constructorArgTypes, List<Object> constructorArgs, String columnPrefix)
       throws SQLException {
+    // 根据resultMap配置的类型，生成实例对象
     final Class<?> resultType = resultMap.getType();
     final MetaClass metaType = MetaClass.forClass(resultType, reflectorFactory);
     final List<ResultMapping> constructorMappings = resultMap.getConstructorResultMappings();
@@ -614,6 +616,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     } else if (!constructorMappings.isEmpty()) {
       return createParameterizedResultObject(rsw, resultType, constructorMappings, constructorArgTypes, constructorArgs, columnPrefix);
     } else if (resultType.isInterface() || metaType.hasDefaultConstructor()) {
+      // idea 调用objectFactory的create方法创建对象
       return objectFactory.create(resultType);
     } else if (shouldApplyAutomaticMappings(resultMap, false)) {
       return createByConstructorSignature(rsw, resultType, constructorArgTypes, constructorArgs);

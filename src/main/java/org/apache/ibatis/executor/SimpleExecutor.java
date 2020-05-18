@@ -55,7 +55,7 @@ public class SimpleExecutor extends BaseExecutor {
 
   @Override
   public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
-    // idea 这里有非常熟悉的jdcb代码，开启一个statement，然后最后关闭一个statement
+    // idea 这里有非常熟悉的jdbc代码，开启一个statement，然后最后关闭一个statement
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
