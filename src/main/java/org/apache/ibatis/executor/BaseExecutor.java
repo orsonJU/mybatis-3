@@ -346,6 +346,7 @@ public abstract class BaseExecutor implements Executor {
   protected Connection getConnection(Log statementLog) throws SQLException {
     // 事务开始
     Connection connection = transaction.getConnection();
+    // idea 如果开启了日志功能，则对cnonection进行代理
     if (statementLog.isDebugEnabled()) {
       return ConnectionLogger.newInstance(connection, statementLog, queryStack);
     } else {

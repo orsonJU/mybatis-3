@@ -53,6 +53,7 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
           debug(" Preparing: " + removeBreakingWhitespace((String) params[0]), true);
         }
         PreparedStatement stmt = (PreparedStatement) method.invoke(connection, params);
+        // 动态代理PreparedStatement
         stmt = PreparedStatementLogger.newInstance(stmt, statementLog, queryStack);
         return stmt;
       } else if ("prepareCall".equals(method.getName())) {
@@ -60,10 +61,12 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
           debug(" Preparing: " + removeBreakingWhitespace((String) params[0]), true);
         }
         PreparedStatement stmt = (PreparedStatement) method.invoke(connection, params);
+        // 动态代理PreparedStatement
         stmt = PreparedStatementLogger.newInstance(stmt, statementLog, queryStack);
         return stmt;
       } else if ("createStatement".equals(method.getName())) {
         Statement stmt = (Statement) method.invoke(connection, params);
+        // 动态代理Statement
         stmt = StatementLogger.newInstance(stmt, statementLog, queryStack);
         return stmt;
       } else {
@@ -83,6 +86,7 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
   public static Connection newInstance(Connection conn, Log statementLog, int queryStack) {
     InvocationHandler handler = new ConnectionLogger(conn, statementLog, queryStack);
     ClassLoader cl = Connection.class.getClassLoader();
+    // 真正对动态代理调用
     return (Connection) Proxy.newProxyInstance(cl, new Class[]{Connection.class}, handler);
   }
 

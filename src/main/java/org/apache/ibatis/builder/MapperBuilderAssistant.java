@@ -331,6 +331,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
       String statementId) {
     resultMap = applyCurrentNamespace(resultMap, true);
 
+    /**
+     * idea 原来resultMap是可以填写多个，然后用,号分割开
+     */
     List<ResultMap> resultMaps = new ArrayList<>();
     if (resultMap != null) {
       String[] resultMapNames = resultMap.split(",");

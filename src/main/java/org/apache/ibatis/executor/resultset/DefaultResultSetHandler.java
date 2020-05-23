@@ -192,6 +192,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     validateResultMapsCount(rsw, resultMapCount);
 
     while (rsw != null && resultMapCount > resultSetCount) {
+      // 获取第n个resultMap对象
       ResultMap resultMap = resultMaps.get(resultSetCount);
       handleResultSet(rsw, resultMap, multipleResults, null);
       rsw = getNextResultSet(stmt);

@@ -38,6 +38,7 @@ public class MetaObject {
   private final ObjectWrapperFactory objectWrapperFactory;
   private final ReflectorFactory reflectorFactory;
 
+  // 这个构造函数一样依赖了很多的参数
   private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
     this.originalObject = object;
     this.objectFactory = objectFactory;
@@ -57,6 +58,7 @@ public class MetaObject {
     }
   }
 
+  // 也是一种构造函数的变形，通过静态方法获取对象实例
   public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
     if (object == null) {
       return SystemMetaObject.NULL_META_OBJECT;

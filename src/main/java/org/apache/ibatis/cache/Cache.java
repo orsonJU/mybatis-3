@@ -48,7 +48,7 @@ public interface Cache {
 
   /**
    * @param key Can be any object but usually it is a {@link CacheKey}
-   * @param value The result of a select.
+   * @param value The result of a select.O
    */
   void putObject(Object key, Object value);
 

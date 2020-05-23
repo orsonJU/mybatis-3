@@ -35,14 +35,21 @@ public final class MappedStatement {
 
   private String resource;
   private Configuration configuration;
+  // statement的id属性
   private String id;
   private Integer fetchSize;
   private Integer timeout;
+  // select|update|insert|delete
   private StatementType statementType;
+  // resultType或者resultMap只能选择其中一个
   private ResultSetType resultSetType;
+  // SQL内容
   private SqlSource sqlSource;
   private Cache cache;
+  // 参数类型属性
   private ParameterMap parameterMap;
+  // todo resultMap属性，应该只有一个啊，难道是为了处理resultMap的继承？
+  // idea JDBC在调用PL/SQL的时候允许返回多个ResultSet集合，每个ResultSet集合可以是不同的数据结构，所以需要支持多ResultSet
   private List<ResultMap> resultMaps;
   private boolean flushCacheRequired;
   private boolean useCache;

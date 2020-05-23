@@ -50,11 +50,17 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
 public class Reflector {
 
   private final Class<?> type;
+  // 可以写入的属性，根据Java bean规范，有setter方法的属性是可以写入的
   private final String[] readablePropertyNames;
+  // 可以写入的属性，根据Java bean规范，有getter方法的属性是可以读取的
   private final String[] writablePropertyNames;
+  // 属性名字和它的setter方法
   private final Map<String, Invoker> setMethods = new HashMap<>();
+  // 属性名字和它的getter方法
   private final Map<String, Invoker> getMethods = new HashMap<>();
+  // setter对应字段的class类型
   private final Map<String, Class<?>> setTypes = new HashMap<>();
+  // getter对应字段的class类型
   private final Map<String, Class<?>> getTypes = new HashMap<>();
   private Constructor<?> defaultConstructor;
 
